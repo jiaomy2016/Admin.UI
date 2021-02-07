@@ -46,7 +46,7 @@
       <el-table-column prop="value" label="字典值" width />
       <el-table-column prop="createdTime" label="创建时间" :formatter="formatCreatedTime" width="140" />
       <el-table-column prop="enabled" label="状态" width="100">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <el-tag
             :type="row.enabled ? 'success' : 'danger'"
             disable-transitions
@@ -54,7 +54,7 @@
         </template>
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:dictionary:update','api:admin:dictionary:softdelete'])" label="操作" fixed="right" width="180">
-        <template v-if="checkPermission(['api:admin:dictionary:add'])" v-slot="{ $index, row }">
+        <template v-if="checkPermission(['api:admin:dictionary:add'])" #default="{ $index, row }">
           <el-button icon="el-icon-edit" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button
             v-if="checkPermission(['api:admin:dictionary:add'])"
@@ -192,11 +192,10 @@ import {
   getDictionary
 } from '@/api/admin/dictionary'
 import MyContainer from '@/components/my-container'
-import MyPagination from '@/components/my-pagination'
 import MyConfirmButton from '@/components/my-confirm-button'
 export default {
   name: 'Dictionary',
-  components: { MyContainer, MyConfirmButton, MyPagination },
+  components: { MyContainer, MyConfirmButton },
   data() {
     return {
       filter: {
@@ -259,7 +258,7 @@ export default {
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     onSearch() {
       this.$refs.pager.setPage(1)

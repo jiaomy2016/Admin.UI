@@ -74,7 +74,7 @@
                 @current-change="onCurrentChange"
               >
                 <el-table-column label="文档" width>
-                  <template v-slot="{row}">
+                  <template #default="{row}">
                     <i :class="row.icon" />
                     {{ row.label }}
                   </template>
@@ -87,7 +87,7 @@
                   label="操作"
                   align="right"
                 >
-                  <template v-slot="{ $index, row }">
+                  <template #default="{ $index, row }">
                     <el-button
                       v-if="(row.type === 1 && checkPermission(['api:admin:document:updategroup']))
                         || (row.type === 2 && checkPermission(['api:admin:document:updatemenu']))"
@@ -252,7 +252,6 @@
 </template>
 
 <script>
-import ImageViewer from 'element-ui/packages/image/src/image-viewer'
 import MyMarkdownEditor from '@/components/my-markdown-editor'
 import MyConfirmButton from '@/components/my-confirm-button'
 import { listToTree, getTreeParents } from '@/utils'
@@ -275,7 +274,7 @@ let prevOverflow = ''
 
 export default {
   name: 'Doc',
-  components: { ImageViewer, MyMarkdownEditor, MyConfirmButton },
+  components: { MyMarkdownEditor, MyConfirmButton },
   data() {
     const tabs = { doc: 'docTab', img: 'imgTab' }
     return {
@@ -425,7 +424,7 @@ export default {
       this.document.form.html = this.$refs.markdownEditor.getHtml()
 
       this.document.loadingSave = true
-      const res = await updateContent(this.document.form, { noErrorMsg: autoSave })
+      const res = await updateContent(this.document.form, { api: { noErrorMsg: autoSave }})
       this.document.loadingSave = false
       if (!res?.success) {
         return

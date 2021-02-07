@@ -75,12 +75,13 @@ function generateRoutes(menus = []) {
         const route = {
           name: m.path,
           path: m.path,
-          // 如果IIS导入组件修改_import_production还是有问题，可以尝试直接使用 require('@/views' + m.viewPath + '.vue').default 导入
+          // 如果IIS导入组件还是有问题，可以尝试直接使用 require('@/views' + m.viewPath + '.vue').default 导入
           component: _import(m.viewPath),
           meta: {
             title: m.label,
             icon: m.icon,
-            closable: m.closable
+            closable: m.closable,
+            path: m.path
           }
         }
 
@@ -99,7 +100,7 @@ function generateRoutes(menus = []) {
 
   routes.children.push({
     path: '*',
-    component: _import('/admin/404'),
+    component: _import('/error/404'),
     hidden: true
   })
 
@@ -155,11 +156,21 @@ function toLogin(to, next) {
   }
 }
 
+// 设置缓存视图
+function setCachedViews() {
+  let sessionStorageTabs = sessionStorage.getItem('tabs')
+  sessionStorageTabs = sessionStorageTabs ? JSON.parse(sessionStorageTabs) : []
+  const cachedViews = sessionStorageTabs.map(t => t.name)
+  store.commit('tabsView/set_cached_view', cachedViews)
+}
+
 let first = true
 // 路由全局前置守卫
 router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   const token = getToken()
+
+  setCachedViews()
 
   if (token) {
     if (to.path === '/login') {

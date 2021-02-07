@@ -1,6 +1,39 @@
 <template>
-  <section style="padding:20px 80px 0px 8px;">
+  <section class="wrap">
     <el-timeline>
+      <el-timeline-item timestamp="版本 1.5.0" placement="top">
+        <el-card>
+          <h4>升级 后端目标框架到.Net 5.0，FreeSql到1.10.3，其它Nuget包到当前最新版本。</h4>
+          <h4>升级 前端脚手架vue-cli到4.5.8，vue到2.6.12，element-ui到2.14.1，其它npm包到当前最新版本。</h4>
+          <h4>新增 租户管理界面</h4>
+          <h4>新增 支持多数据库操作</h4>
+          <h4>新增 对话框及其遮罩支持内嵌界面</h4>
+          <h4>新增 抽屉窗口及其遮罩支持内嵌界面</h4>
+          <h4>更新 admin数据包data.json更新并增加租户演示数据</h4>
+          <h4>优化 表索引命名自动读取表名称</h4>
+          <h4>优化 后端Api权限验证增加HttpMethod校验</h4>
+          <h4>修复 使用动态路径（path/:id），菜单标题组无法显示的问题</h4>
+          <h4>修复 用户登录成功后获取登录信息为空无提示的问题</h4>
+          <h4>修复 axios get请求通过config配置无法生效的问题</h4>
+          <h4>修复 用户权限缓存数据获取失败后，无法正常访问的问题</h4>
+          <h4>调整 处理请求和响应的配置统一使用config:{api:{}}</h4>
+          <p>小雪转中雪 提交于 2020-11-23</p>
+        </el-card>
+      </el-timeline-item>
+      <el-timeline-item timestamp="版本 1.4.1" placement="top">
+        <el-card>
+          <h4>升级 Nuget包到最新版本</h4>
+          <h4>升级 vue cli到4.5.3版本</h4>
+          <h4>修复 在ie11下无法访问界面，get请求使用缓存导致无法登录的问题</h4>
+          <h4>修复 在ie11下文档管理界面无法加载</h4>
+          <h4>修复 在ie11下tabs右键菜单无法打开的问题</h4>
+          <h4>修复 在ie11下前端时间格式化显示错误</h4>
+          <h4>调整 将node-sass更改为sass，穿透组件样式统一使用::v-deep</h4>
+          <h4>调整 测试项目用户数据，测试时用户能够成功登录</h4>
+          <h4>优化 将分页组件加入到全局组件中，界面无需再导入分页组件</h4>
+          <p>小雪转中雪 提交于 2020-8-14</p>
+        </el-card>
+      </el-timeline-item>
       <el-timeline-item timestamp="版本 1.4.0" placement="top">
         <el-card>
           <h4>新增 支持JWT和IS4认证切换</h4>
@@ -149,7 +182,7 @@
         </el-card>
       </el-timeline-item>
     </el-timeline>
-    <el-backtop target=".container .main" :visibility-height="200" />
+    <el-backtop target=".container .main" :visibility-height="200" class="backtop" />
   </section>
 </template>
 
@@ -164,7 +197,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 h2,h3,h4,h5 {
     font-weight: 400;
     color: #1f2f3d;
@@ -179,5 +212,20 @@ p {
 }
 .el-timeline{
   padding-left: 15px;
+}
+
+.wrap{
+  padding:20px 80px 0px 8px;
+}
+
+@media screen and (max-width: 680px) {
+  .wrap{
+    padding:20px 10px 0px 8px;
+  }
+
+  .backtop {
+    right: 5px !important;
+    bottom: 5px !important;
+  }
 }
 </style>

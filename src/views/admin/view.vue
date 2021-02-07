@@ -67,14 +67,14 @@
       <el-table-column prop="path" label="视图地址" width />
       <el-table-column prop="description" label="视图描述" width />
       <el-table-column prop="enabled" label="状态" width="100">
-        <template v-slot="{row}">
+        <template #default="{row}">
           <el-tag :type="row.enabled ? 'success' : 'info'" disable-transitions>
             {{ row.enabled ? '正常' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column v-if="checkPermission(['api:admin:view:update','api:admin:view:softdelete'])" label="操作" width="180">
-        <template v-slot="{ $index, row }">
+        <template #default="{ $index, row }">
           <el-button v-if="checkPermission(['api:admin:view:update'])" @click="onEdit($index, row)">编辑</el-button>
           <my-confirm-button v-if="checkPermission(['api:admin:view:softdelete'])" type="delete" :loading="row._loading" @click="onDelete($index, row)" />
         </template>
@@ -238,7 +238,7 @@ export default {
   },
   methods: {
     formatCreatedTime: function(row, column, time) {
-      return formatTime(time, 'yyyy-MM-dd hh:mm')
+      return formatTime(time, 'YYYY-MM-DD HH:mm')
     },
     // 获取列表
     async onGetList() {

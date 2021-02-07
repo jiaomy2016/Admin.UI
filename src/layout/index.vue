@@ -69,7 +69,7 @@
             :type="tabType"
             @tab-click="onTabClick"
             @tab-remove="onRemoveTab"
-            @contextmenu.prevent.native="onOpenRightMenu($event)"
+            @contextmenu.prevent.native="onOpenMenu"
           >
             <el-tab-pane
               v-for="tab in tabsList"
@@ -93,33 +93,6 @@
           <router-view :key="key" />
         </keep-alive>
       </el-main>
-      <el-footer v-if="tabPosition === 'bottom'" class="footer" height>
-        <el-tabs
-          v-if="showTabs"
-          ref="tabs"
-          :value="tabName"
-          :type="tabType"
-          :tab-position="tabPosition"
-          @tab-click="onTabClick"
-          @tab-remove="onRemoveTab"
-          @contextmenu.prevent.native="onOpenRightMenu"
-        >
-          <el-tab-pane
-            v-for="tab in tabsList"
-            :key="tab.path"
-            :name="tab.path"
-            :label="tab.meta.title"
-            :closable="tab.meta.closable"
-          >
-            <template #label>
-              <span>
-                <i :class="tab.meta.icon" />
-                {{ tab.meta.title }}
-              </span>
-            </template>
-          </el-tab-pane>
-        </el-tabs>
-      </el-footer>
       <ul
         v-if="tabPosition === 'top'"
         v-show="rightMenu.visible"
@@ -149,6 +122,34 @@
           <span>关闭所有</span>
         </li>
       </ul>
+      <el-footer v-if="tabPosition === 'bottom'" class="footer" height>
+        <el-tabs
+          v-if="showTabs"
+          ref="tabs"
+          :value="tabName"
+          :type="tabType"
+          :tab-position="tabPosition"
+          @tab-click="onTabClick"
+          @tab-remove="onRemoveTab"
+          @contextmenu.prevent.native="onOpenMenu"
+        >
+          <el-tab-pane
+            v-for="tab in tabsList"
+            :key="tab.path"
+            :name="tab.path"
+            :label="tab.meta.title"
+            :closable="tab.meta.closable"
+          >
+            <template #label>
+              <span>
+                <i :class="tab.meta.icon" />
+                {{ tab.meta.title }}
+              </span>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
+
+      </el-footer>
       <ul
         v-if="tabPosition === 'bottom'"
         v-show="rightMenu.visible"
@@ -190,6 +191,22 @@ import Sortable from 'sortablejs'
 import { isExternalLink } from '@/utils/validate'
 import { toLogout } from '@/router'
 
+if (!Element.prototype.closest) {
+  if (!Element.prototype.matches) {
+    Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector
+  }
+
+  Element.prototype.closest = function(s) {
+    var el = this
+    if (!document.documentElement.contains(el)) return null
+    do {
+      if (el.matches(s)) return el
+      el = el.parentElement
+    } while (el !== null)
+    return null
+  }
+}
+
 export default {
   name: 'AppMain',
   components: {
@@ -201,7 +218,7 @@ export default {
       menuTree: [],
       projectName: 'Admin',
       projectNameShort: 'AD',
-      avatarDefault: require('@/assets/avatar.png'),
+      avatarDefault: require('@/assets/images/avatar.png'),
       collapsedClass: 'menu-expanded',
       isCollapse: false,
       isPc: false,
@@ -224,8 +241,8 @@ export default {
     ]),
     menueTitles() {
       let parentTitles = []
-      const fullPath = this.$route.fullPath
-      const menu = this.menus.find(m => m.path === fullPath)
+      const path = this.$route.meta.path
+      const menu = this.menus.find(m => m.path === path)
       if (menu && menu.id > 0) {
         const parents = getTreeParents(this.menuTree, menu.id)
         parentTitles = parents.map(p => p.label)
@@ -343,7 +360,6 @@ export default {
       if (exists) {
         return
       }
-
       // 获取视图缓存名
       const matchedIndex = route.matched && route.matched.length - 1
       let name = matchedIndex >= 0 && route.matched[matchedIndex].components.default.name
@@ -397,7 +413,7 @@ export default {
       // this.collapsedClass = this.isCollapse ? 'menu-collapsed':'menu-expanded';
     },
     // tab打开右键菜单
-    onOpenRightMenu(e) {
+    onOpenMenu(e) {
       const $tab = e.target.closest('.el-tabs__item')
       if ($tab) {
         const id = $tab.getAttribute('id')
@@ -407,12 +423,32 @@ export default {
         )
 
         this.rightMenu.visible = true
-        this.rightMenu.left = e.x
+        // this.rightMenu.left = e.x
+        // this.$nextTick(() => {
+        //   if (this.tabPosition === 'bottom') {
+        //     this.rightMenu.top = e.y - this.$refs.rightMenu.offsetHeight
+        //   } else if (this.tabPosition === 'top') {
+        //     this.rightMenu.top = e.y
+        //   }
+        // })
+
+        const menuMinWidth = 132
+        const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
+        const offsetWidth = this.$el.offsetWidth // container width
+        const maxLeft = offsetWidth - menuMinWidth // left boundary
+        const left = e.clientX - offsetLeft + 0 // 15: margin right
+
+        if (left > maxLeft) {
+          this.rightMenu.left = maxLeft
+        } else {
+          this.rightMenu.left = left
+        }
+
         this.$nextTick(() => {
           if (this.tabPosition === 'bottom') {
-            this.rightMenu.top = e.y - this.$refs.rightMenu.offsetHeight
+            this.rightMenu.top = e.clientY - this.$refs.rightMenu.offsetHeight
           } else if (this.tabPosition === 'top') {
-            this.rightMenu.top = e.y
+            this.rightMenu.top = e.clientY
           }
         })
       }
